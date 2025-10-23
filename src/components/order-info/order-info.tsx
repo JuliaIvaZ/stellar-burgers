@@ -1,21 +1,27 @@
 import { FC, useMemo } from 'react';
+import { useParams } from 'react-router-dom';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
-import { TIngredient } from '@utils-types';
+import { useDispatch, useSelector } from '../../services/store';
+import { fetchOrderByNumber } from '../../services/slices/ordersSlice';
+import {
+  selectCurrentOrder,
+  selectOrdersLoading
+} from '../../services/selectors';
+import { selectIngredients } from '../../services/selectors';
 
 export const OrderInfo: FC = () => {
-  /** TODO: взять переменные orderData и ingredients из стора */
-  const orderData = {
-    createdAt: '',
-    ingredients: [],
-    _id: '',
-    status: '',
-    name: '',
-    updatedAt: 'string',
-    number: 0
-  };
+  const dispatch = useDispatch();
+  const { number } = useParams<{ number: string }>();
+  const orderData = useSelector(selectCurrentOrder);
+  const ingredients = useSelector(selectIngredients);
+  const loading = useSelector(selectOrdersLoading);
 
-  const ingredients: TIngredient[] = [];
+  useMemo(() => {
+    if (number && !orderData && !loading) {
+      dispatch(fetchOrderByNumber(Number(number)));
+    }
+  }, [dispatch, number, orderData, loading]);
 
   /* Готовим данные для отображения */
   const orderInfo = useMemo(() => {
@@ -24,7 +30,7 @@ export const OrderInfo: FC = () => {
     const date = new Date(orderData.createdAt);
 
     type TIngredientsWithCount = {
-      [key: string]: TIngredient & { count: number };
+      [key: string]: (typeof ingredients)[0] & { count: number };
     };
 
     const ingredientsInfo = orderData.ingredients.reduce(
@@ -59,7 +65,7 @@ export const OrderInfo: FC = () => {
     };
   }, [orderData, ingredients]);
 
-  if (!orderInfo) {
+  if (loading || !orderInfo) {
     return <Preloader />;
   }
 
