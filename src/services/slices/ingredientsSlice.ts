@@ -25,7 +25,7 @@ export const fetchIngredients = createAsyncThunk(
     } catch (error) {
       console.warn('API недоступен, используем mock данные:', error);
       // Возвращаем mock данные в случае ошибки API
-      return mockIngredients;
+      //return mockIngredients;
     }
   }
 );
