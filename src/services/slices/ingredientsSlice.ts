@@ -25,7 +25,7 @@ export const fetchIngredients = createAsyncThunk(
     } catch (error) {
       console.warn('API недоступен, используем mock данные:', error);
       // Возвращаем mock данные в случае ошибки API
-      //return mockIngredients;
+      return mockIngredients;
     }
   }
 );
@@ -48,7 +48,7 @@ const ingredientsSlice = createSlice({
         fetchIngredients.fulfilled,
         (state, action: PayloadAction<TIngredient[]>) => {
           state.loading = false;
-          state.items = action.payload;
+          state.items = action.payload || [];
           state.error = null;
         }
       )

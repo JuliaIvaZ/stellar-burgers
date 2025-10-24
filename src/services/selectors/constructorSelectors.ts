@@ -8,7 +8,7 @@ export const selectConstructorItems = (state: RootState) => ({
 
 export const selectConstructorBun = (state: RootState) => state.constructor.bun;
 export const selectConstructorIngredients = (state: RootState) =>
-  state.constructor.ingredients;
+  state.constructor.ingredients || []; // Защита по умолчанию
 
 export const selectIngredientCount =
   (ingredientId: string) => (state: RootState) => {
@@ -19,16 +19,19 @@ export const selectIngredientCount =
       return 2;
     }
 
-    // Для начинок и соусов считаем количество
-    return ingredients.filter((ingredient) => ingredient._id === ingredientId)
-      .length;
+    // Для начинок и соусов считаем количество (с защитой)
+    return (ingredients || []).filter(
+      (ingredient) => ingredient._id === ingredientId
+    ).length;
   };
 
 export const selectConstructorPrice = (state: RootState) => {
   const { bun, ingredients } = state.constructor;
 
   const bunPrice = bun ? bun.price * 2 : 0;
-  const ingredientsPrice = ingredients.reduce(
+
+  // Добавляем защиту от undefined
+  const ingredientsPrice = (ingredients || []).reduce(
     (sum, ingredient) => sum + ingredient.price,
     0
   );

@@ -1,46 +1,33 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TConstructorIngredient } from '@utils-types';
 
-export interface ConstructorState {
-  bun: TConstructorIngredient | null;
-  ingredients: TConstructorIngredient[];
-}
-
-const initialState: ConstructorState = {
-  bun: null,
-  ingredients: []
-};
-
 const constructorSlice = createSlice({
   name: 'constructor',
-  initialState,
+  initialState: {
+    bun: null as TConstructorIngredient | null,
+    ingredients: [] as TConstructorIngredient[]
+  },
   reducers: {
     addIngredient: (state, action: PayloadAction<TConstructorIngredient>) => {
-      const ingredient = action.payload;
-
-      if (ingredient.type === 'bun') {
-        // Заменяем булку
-        state.bun = ingredient;
+      if (action.payload.type === 'bun') {
+        state.bun = action.payload;
       } else {
-        // Добавляем начинку или соус
-        state.ingredients.push(ingredient);
+        state.ingredients.push(action.payload);
       }
     },
     removeIngredient: (state, action: PayloadAction<string>) => {
-      const index = state.ingredients.findIndex(
-        (ingredient) => ingredient.id === action.payload
+      state.ingredients = state.ingredients.filter(
+        (item) => item.id !== action.payload
       );
-      if (index !== -1) {
-        state.ingredients.splice(index, 1);
-      }
     },
     moveIngredient: (
       state,
       action: PayloadAction<{ fromIndex: number; toIndex: number }>
     ) => {
       const { fromIndex, toIndex } = action.payload;
-      const [movedIngredient] = state.ingredients.splice(fromIndex, 1);
-      state.ingredients.splice(toIndex, 0, movedIngredient);
+      const item = state.ingredients[fromIndex];
+      state.ingredients.splice(fromIndex, 1);
+      state.ingredients.splice(toIndex, 0, item);
     },
     clearConstructor: (state) => {
       state.bun = null;
@@ -55,5 +42,4 @@ export const {
   moveIngredient,
   clearConstructor
 } = constructorSlice.actions;
-
 export default constructorSlice.reducer;
