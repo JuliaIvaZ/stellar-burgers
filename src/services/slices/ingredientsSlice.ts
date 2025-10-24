@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { TIngredient } from '@utils-types';
 import { getIngredientsApi } from '@api';
-import { mockIngredients } from '../../utils/mock-data';
 
 export interface IngredientsState {
   items: TIngredient[];
@@ -23,9 +22,9 @@ export const fetchIngredients = createAsyncThunk(
       const data = await getIngredientsApi();
       return data;
     } catch (error) {
-      console.warn('API недоступен, используем mock данные:', error);
-      // Возвращаем mock данные в случае ошибки API
-      return mockIngredients;
+      return rejectWithValue(
+        error instanceof Error ? error.message : 'Ошибка загрузки ингредиентов'
+      );
     }
   }
 );

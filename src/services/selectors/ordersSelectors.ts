@@ -1,4 +1,5 @@
 import { RootState } from '../store';
+import { createSelector } from '@reduxjs/toolkit';
 
 export const selectFeeds = (state: RootState) => state.orders.feeds;
 export const selectUserOrders = (state: RootState) => state.orders.userOrders;
@@ -12,10 +13,12 @@ export const selectOrderRequest = (state: RootState) =>
 export const selectOrderModalData = (state: RootState) =>
   state.orders.orderModalData;
 
-export const selectOrderByNumber = (number: number) => (state: RootState) =>
-  [...state.orders.feeds, ...state.orders.userOrders].find(
-    (order) => order.number === number
+export const selectOrderByNumber = (number: number) =>
+  createSelector([selectFeeds, selectUserOrders], (feeds, userOrders) =>
+    [...feeds, ...userOrders].find((order) => order.number === number)
   );
 
-export const selectOrdersByStatus = (status: string) => (state: RootState) =>
-  state.orders.userOrders.filter((order) => order.status === status);
+export const selectOrdersByStatus = (status: string) =>
+  createSelector([selectUserOrders], (userOrders) =>
+    userOrders.filter((order) => order.status === status)
+  );

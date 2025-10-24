@@ -8,13 +8,15 @@ import { fetchIngredients } from '../../services/slices/ingredientsSlice';
 import {
   selectIngredients,
   selectIngredientsLoading,
-  selectIngredientsByType
+  selectIngredientsByType,
+  selectIsAuthenticated
 } from '../../services/selectors';
 
 export const BurgerIngredients: FC = () => {
   const dispatch = useDispatch();
   const ingredients = useSelector(selectIngredients);
   const loading = useSelector(selectIngredientsLoading);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
 
   const buns = useSelector(selectIngredientsByType('bun'));
   const mains = useSelector(selectIngredientsByType('main'));

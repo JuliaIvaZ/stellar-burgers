@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useRef } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from '../../services/store';
 import {
@@ -7,6 +7,7 @@ import {
 } from '../../services/selectors';
 import { fetchUser } from '../../services/slices/authSlice';
 import { Preloader } from '../ui/preloader';
+import { getCookie } from '../../utils/cookie';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -21,11 +22,16 @@ export const ProtectedRoute: FC<ProtectedRouteProps> = ({
   const location = useLocation();
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const loading = useSelector(selectAuthLoading);
+  const hasCheckedAuth = useRef(false);
 
   useEffect(() => {
-    // Проверяем авторизацию при загрузке компонента
-    if (!isAuthenticated && !loading) {
-      dispatch(fetchUser());
+    // Проверяем авторизацию только один раз при загрузке приложения
+    if (!hasCheckedAuth.current) {
+      const accessToken = getCookie('accessToken');
+      if (!isAuthenticated && !loading && accessToken) {
+        dispatch(fetchUser());
+      }
+      hasCheckedAuth.current = true;
     }
   }, [dispatch, isAuthenticated, loading]);
 

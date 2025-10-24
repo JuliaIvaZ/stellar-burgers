@@ -24,7 +24,7 @@ export const BurgerConstructor: FC = () => {
   const constructorItems = useSelector(selectConstructorItems);
   const price = useSelector(selectConstructorPrice);
 
-  const onOrderClick = () => {
+  const onOrderClick = async () => {
     if (!constructorItems.bun || orderRequest) return;
 
     // Проверяем авторизацию перед оформлением заказа
@@ -40,7 +40,12 @@ export const BurgerConstructor: FC = () => {
       constructorItems.bun._id
     ];
 
-    dispatch(createOrder(ingredients));
+    try {
+      await dispatch(createOrder(ingredients));
+      dispatch(clearConstructor());
+    } catch (error) {
+      console.error('Ошибка при отправке заказа:', error);
+    }
   };
 
   const closeOrderModal = () => {

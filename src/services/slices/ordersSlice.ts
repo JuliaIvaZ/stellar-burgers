@@ -117,8 +117,16 @@ const ordersSlice = createSlice({
         fetchFeeds.fulfilled,
         (state, action: PayloadAction<TOrdersData>) => {
           state.loading = false;
-          state.feeds = action.payload.orders;
-          state.feedsData = action.payload;
+          // Очищаем данные от несериализуемых свойств
+          const orders = action.payload.orders.map((order) => {
+            const { constructor: _, ...cleanOrder } = order as any;
+            return cleanOrder as TOrder;
+          });
+          state.feeds = orders;
+          state.feedsData = {
+            ...action.payload,
+            orders
+          };
           state.error = null;
         }
       )
@@ -142,6 +150,13 @@ const ordersSlice = createSlice({
       .addCase(fetchUserOrders.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+        // Если получили ошибку 401, очищаем заказы пользователя
+        if (
+          action.payload === 'jwt expired' ||
+          action.payload === 'jwt malformed'
+        ) {
+          state.userOrders = [];
+        }
       })
       // Fetch order by number
       .addCase(fetchOrderByNumber.pending, (state) => {
@@ -167,7 +182,14 @@ const ordersSlice = createSlice({
       })
       .addCase(createOrder.fulfilled, (state, action) => {
         state.orderRequest = false;
-        state.orderModalData = { number: action.payload.order.number };
+        // Очищаем данные от несериализуемых свойств
+        if (
+          action.payload &&
+          action.payload.order &&
+          action.payload.order.number
+        ) {
+          state.orderModalData = { number: action.payload.order.number };
+        }
         state.error = null;
       })
       .addCase(createOrder.rejected, (state, action) => {

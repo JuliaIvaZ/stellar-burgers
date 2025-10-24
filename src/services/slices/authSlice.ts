@@ -193,6 +193,9 @@ const authSlice = createSlice({
       .addCase(logoutUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+        // Даже при ошибке выхода очищаем состояние авторизации
+        state.user = null;
+        state.isAuthenticated = false;
       })
       // Fetch user
       .addCase(fetchUser.pending, (state) => {
@@ -208,6 +211,14 @@ const authSlice = createSlice({
       .addCase(fetchUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+        // Если получили ошибку 401, очищаем состояние авторизации
+        if (
+          action.payload === 'jwt expired' ||
+          action.payload === 'jwt malformed'
+        ) {
+          state.user = null;
+          state.isAuthenticated = false;
+        }
       })
       // Update user
       .addCase(updateUser.pending, (state) => {

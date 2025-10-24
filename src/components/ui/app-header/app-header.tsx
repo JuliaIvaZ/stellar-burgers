@@ -8,23 +8,32 @@ import {
   ProfileIcon
 } from '@zlden/react-developer-burger-ui-components';
 
-export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => (
+export const AppHeaderUI: FC<TAppHeaderUIProps> = ({
+  userName,
+  onProfileClick,
+  onConstructorClick,
+  onFeedClick
+}) => (
   <header className={styles.header}>
     <nav className={`${styles.menu} p-4`}>
       <div className={styles.menu_part_left}>
-        <>
+        <div onClick={onConstructorClick} style={{ cursor: 'pointer' }}>
           <BurgerIcon type={'primary'} />
           <p className='text text_type_main-default ml-2 mr-10'>Конструктор</p>
-        </>
-        <>
+        </div>
+        <div onClick={onFeedClick} style={{ cursor: 'pointer' }}>
           <ListIcon type={'primary'} />
           <p className='text text_type_main-default ml-2'>Лента заказов</p>
-        </>
+        </div>
       </div>
       <div className={styles.logo}>
         <Logo className='' />
       </div>
-      <div className={styles.link_position_last}>
+      <div
+        className={styles.link_position_last}
+        onClick={onProfileClick}
+        style={{ cursor: 'pointer' }}
+      >
         <ProfileIcon type={'primary'} />
         <p className='text text_type_main-default ml-2'>
           {userName || 'Личный кабинет'}
