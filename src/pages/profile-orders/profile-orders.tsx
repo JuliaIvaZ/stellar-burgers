@@ -2,10 +2,12 @@ import { ProfileOrdersUI } from '@ui-pages';
 import { FC, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from '../../services/store';
 import { fetchUserOrders } from '../../services/slices/ordersSlice';
+import { fetchIngredients } from '../../services/slices/ingredientsSlice';
 import {
   selectUserOrders,
   selectOrdersLoading,
-  selectIsAuthenticated
+  selectIsAuthenticated,
+  selectIngredients
 } from '../../services/selectors';
 import { Preloader } from '@ui';
 
@@ -13,6 +15,7 @@ export const ProfileOrders: FC = () => {
   const dispatch = useDispatch();
   const orders = useSelector(selectUserOrders);
   const loading = useSelector(selectOrdersLoading);
+  const ingredients = useSelector(selectIngredients);
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const hasFetchedOrders = useRef(false);
 
@@ -22,6 +25,12 @@ export const ProfileOrders: FC = () => {
       hasFetchedOrders.current = true;
     }
   }, [dispatch, isAuthenticated, loading]);
+
+  useEffect(() => {
+    if (!ingredients.length) {
+      dispatch(fetchIngredients());
+    }
+  }, [dispatch, ingredients.length]);
 
   // Сбрасываем флаг при изменении авторизации
   useEffect(() => {

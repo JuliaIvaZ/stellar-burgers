@@ -119,8 +119,17 @@ const ordersSlice = createSlice({
           state.loading = false;
           // Очищаем данные от несериализуемых свойств
           const orders = action.payload.orders.map((order) => {
-            const { constructor: _, ...cleanOrder } = order as any;
-            return cleanOrder as TOrder;
+            // Создаем новый объект без несериализуемых свойств
+            const cleanOrder: TOrder = {
+              _id: order._id,
+              status: order.status,
+              name: order.name,
+              createdAt: order.createdAt,
+              updatedAt: order.updatedAt,
+              number: order.number,
+              ingredients: order.ingredients
+            };
+            return cleanOrder;
           });
           state.feeds = orders;
           state.feedsData = {
@@ -182,12 +191,42 @@ const ordersSlice = createSlice({
       })
       .addCase(createOrder.fulfilled, (state, action) => {
         state.orderRequest = false;
-        // Очищаем данные от несериализуемых свойств
+
         if (
           action.payload &&
           action.payload.order &&
           action.payload.order.number
         ) {
+          // Проверяем, есть ли полные данные заказа
+          if (
+            action.payload.order._id &&
+            action.payload.order.status &&
+            action.payload.order.name
+          ) {
+            const cleanOrder: TOrder = {
+              _id: action.payload.order._id,
+              status: action.payload.order.status,
+              name: action.payload.order.name,
+              createdAt:
+                action.payload.order.createdAt || new Date().toISOString(),
+              updatedAt:
+                action.payload.order.updatedAt || new Date().toISOString(),
+              number: action.payload.order.number,
+              ingredients: action.payload.order.ingredients || []
+            };
+
+            // Добавляем новый заказ в начало массивов
+            state.feeds.unshift(cleanOrder);
+            state.userOrders.unshift(cleanOrder);
+
+            // Обновляем feedsData
+            if (state.feedsData) {
+              state.feedsData.total += 1;
+              state.feedsData.totalToday += 1;
+              state.feedsData.orders = state.feeds;
+            }
+          }
+
           state.orderModalData = { number: action.payload.order.number };
         }
         state.error = null;

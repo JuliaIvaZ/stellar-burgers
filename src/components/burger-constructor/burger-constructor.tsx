@@ -11,7 +11,8 @@ import {
 } from '../../services/selectors';
 import {
   createOrder,
-  clearOrderModal
+  clearOrderModal,
+  fetchUserOrders
 } from '../../services/slices/ordersSlice';
 import { clearConstructor } from '../../services/slices/constructorSlice';
 
@@ -42,7 +43,6 @@ export const BurgerConstructor: FC = () => {
 
     try {
       await dispatch(createOrder(ingredients));
-      dispatch(clearConstructor());
     } catch (error) {
       console.error('Ошибка при отправке заказа:', error);
     }
@@ -56,6 +56,8 @@ export const BurgerConstructor: FC = () => {
   useEffect(() => {
     if (orderModalData) {
       dispatch(clearConstructor());
+      // Обновляем список заказов пользователя
+      dispatch(fetchUserOrders());
     }
   }, [dispatch, orderModalData]);
 
@@ -64,7 +66,7 @@ export const BurgerConstructor: FC = () => {
       price={price}
       orderRequest={orderRequest}
       constructorItems={constructorItems}
-      orderModalData={null}
+      orderModalData={orderModalData}
       onOrderClick={onOrderClick}
       closeOrderModal={closeOrderModal}
     />

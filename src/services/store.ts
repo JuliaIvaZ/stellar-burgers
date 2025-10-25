@@ -14,7 +14,7 @@ const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
-      immutableCheck: false,
+      immutableCheck: true,
       actionCreatorCheck: false
     })
 });

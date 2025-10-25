@@ -1,4 +1,4 @@
-import { FC, memo } from 'react';
+import { FC, memo, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from '../../services/store';
 import { v4 as uuidv4 } from 'uuid';
@@ -16,7 +16,11 @@ export const BurgerIngredient: FC<TBurgerIngredientProps> = memo(
     const dispatch = useDispatch();
     const location = useLocation();
     const navigate = useNavigate();
-    const count = useSelector(selectIngredientCount(ingredient._id));
+    const ingredientCountSelector = useMemo(
+      () => selectIngredientCount(ingredient._id),
+      [ingredient._id]
+    );
+    const count = useSelector(ingredientCountSelector);
     const isAuthenticated = useSelector(selectIsAuthenticated);
 
     const handleAdd = () => {
@@ -41,6 +45,7 @@ export const BurgerIngredient: FC<TBurgerIngredientProps> = memo(
         image_mobile: constructorIngredient.image_mobile || '',
         id: constructorIngredient.id
       };
+
       dispatch(addIngredient(cleanIngredient));
     };
 

@@ -1,9 +1,11 @@
 import { RootState } from '../store';
 import { createSelector } from '@reduxjs/toolkit';
 
-export const selectConstructorItems = (state: RootState) => state.constructor;
+export const selectConstructorItems = (state: RootState) =>
+  state.burgerConstructor;
 
-export const selectConstructorBun = (state: RootState) => state.constructor.bun;
+export const selectConstructorBun = (state: RootState) =>
+  state.burgerConstructor.bun;
 
 export const selectIngredientCount = (ingredientId: string) =>
   createSelector([selectConstructorItems], (constructorItems) => {

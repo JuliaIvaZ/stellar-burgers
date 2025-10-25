@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react';
+import { FC, useMemo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
@@ -17,7 +17,7 @@ export const OrderInfo: FC = () => {
   const ingredients = useSelector(selectIngredients);
   const loading = useSelector(selectOrdersLoading);
 
-  useMemo(() => {
+  useEffect(() => {
     if (number && !orderData && !loading) {
       dispatch(fetchOrderByNumber(Number(number)));
     }
