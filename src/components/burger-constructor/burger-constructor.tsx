@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BurgerConstructorUI } from '@ui';
 import { useSelector, useDispatch } from '../../services/store';
@@ -11,10 +11,8 @@ import {
 } from '../../services/selectors';
 import {
   createOrder,
-  clearOrderModal,
-  fetchUserOrders
+  clearOrderModal
 } from '../../services/slices/ordersSlice';
-import { clearConstructor } from '../../services/slices/constructorSlice';
 
 export const BurgerConstructor: FC = () => {
   const dispatch = useDispatch();
@@ -51,15 +49,6 @@ export const BurgerConstructor: FC = () => {
   const closeOrderModal = () => {
     dispatch(clearOrderModal());
   };
-
-  // Очищаем конструктор после успешного оформления заказа
-  useEffect(() => {
-    if (orderModalData) {
-      dispatch(clearConstructor());
-      // Обновляем список заказов пользователя
-      dispatch(fetchUserOrders());
-    }
-  }, [dispatch, orderModalData]);
 
   return (
     <BurgerConstructorUI

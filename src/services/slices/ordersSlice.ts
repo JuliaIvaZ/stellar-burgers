@@ -6,6 +6,7 @@ import {
   getOrderByNumberApi,
   orderBurgerApi
 } from '@api';
+import { clearConstructor } from './constructorSlice';
 
 export interface OrdersState {
   feeds: TOrder[];
@@ -79,9 +80,14 @@ export const fetchOrderByNumber = createAsyncThunk(
 // Асинхронная thunk-функция для создания заказа
 export const createOrder = createAsyncThunk(
   'orders/createOrder',
-  async (ingredients: string[], { rejectWithValue }) => {
+  async (ingredients: string[], { rejectWithValue, dispatch }) => {
     try {
       const data = await orderBurgerApi(ingredients);
+      // Очищаем конструктор только при успешном создании заказа
+      dispatch(clearConstructor());
+      // Обновляем списки заказов
+      dispatch(fetchFeeds());
+      dispatch(fetchUserOrders());
       return data;
     } catch (error) {
       return rejectWithValue(
@@ -197,36 +203,6 @@ const ordersSlice = createSlice({
           action.payload.order &&
           action.payload.order.number
         ) {
-          // Проверяем, есть ли полные данные заказа
-          if (
-            action.payload.order._id &&
-            action.payload.order.status &&
-            action.payload.order.name
-          ) {
-            const cleanOrder: TOrder = {
-              _id: action.payload.order._id,
-              status: action.payload.order.status,
-              name: action.payload.order.name,
-              createdAt:
-                action.payload.order.createdAt || new Date().toISOString(),
-              updatedAt:
-                action.payload.order.updatedAt || new Date().toISOString(),
-              number: action.payload.order.number,
-              ingredients: action.payload.order.ingredients || []
-            };
-
-            // Добавляем новый заказ в начало массивов
-            state.feeds.unshift(cleanOrder);
-            state.userOrders.unshift(cleanOrder);
-
-            // Обновляем feedsData
-            if (state.feedsData) {
-              state.feedsData.total += 1;
-              state.feedsData.totalToday += 1;
-              state.feedsData.orders = state.feeds;
-            }
-          }
-
           state.orderModalData = { number: action.payload.order.number };
         }
         state.error = null;
