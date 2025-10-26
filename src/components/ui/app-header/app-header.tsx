@@ -17,7 +17,6 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({
 }) => {
   const location = useLocation();
 
-  // Проверяем, активна ли страница профиля или страницы авторизации
   const isProfileActive =
     location.pathname.startsWith('/profile') ||
     ['/login', '/register', '/forgot-password', '/reset-password'].includes(
