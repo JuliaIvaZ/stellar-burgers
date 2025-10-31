@@ -6,7 +6,8 @@ import { FeedInfoUIProps, HalfColumnProps, TColumnProps } from './type';
 
 export const FeedInfoUI: FC<FeedInfoUIProps> = memo(
   ({ feed, readyOrders, pendingOrders }) => {
-    const { total, totalToday } = feed;
+    const total = feed?.total || 0;
+    const totalToday = feed?.totalToday || 0;
 
     return (
       <section>
