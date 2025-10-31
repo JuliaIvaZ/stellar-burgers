@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import {
   ConstructorPage,
@@ -16,6 +17,13 @@ import {
   OrderInfo,
   ProtectedRoute
 } from '@components';
+import { useSelector, useDispatch } from '../../services/store';
+import {
+  selectIsAuthenticated,
+  selectAuthLoading
+} from '../../services/selectors';
+import { fetchUser } from '../../services/slices/authSlice';
+import { getCookie } from '../../utils/cookie';
 import '../../index.css';
 import styles from './app.module.css';
 
@@ -24,6 +32,21 @@ import { AppHeader } from '@components';
 const App = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const loading = useSelector(selectAuthLoading);
+  const hasCheckedAuth = useRef(false);
+
+  // Инициализация авторизации при загрузке приложения
+  useEffect(() => {
+    if (!hasCheckedAuth.current) {
+      const accessToken = getCookie('accessToken');
+      if (!isAuthenticated && !loading && accessToken) {
+        dispatch(fetchUser());
+      }
+      hasCheckedAuth.current = true;
+    }
+  }, [dispatch, isAuthenticated, loading]);
 
   // Проверяем, есть ли background location (состояние модального окна)
   const background = location.state?.background;
