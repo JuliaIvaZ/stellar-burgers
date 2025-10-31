@@ -15,3 +15,15 @@
 
 // Import commands.js using ES2015 syntax:
 import './commands'
+
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      switchToTab(tabName: string): Chainable<Element>;
+      addIngredient(ingredientName: string, options?: { force?: boolean }): Chainable<Element>;
+      openIngredientModal(ingredientName: string): Chainable<Element>;
+      closeModal(): Chainable<Element>;
+      closeModalByOverlay(): Chainable<Element>;
+    }
+  }
+}
